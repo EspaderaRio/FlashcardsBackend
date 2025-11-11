@@ -1,8 +1,8 @@
-import fetch from 'node-fetch';
+import OpenAI from "openai";
 
 export default async function handler(req, res) {
   // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -19,39 +19,40 @@ export default async function handler(req, res) {
     const { message } = req.body;
 
     if (!message) {
-      return res.status(400).json({ error: 'Missing message' });
+      return res.status(400).json({ error: 'Message is required' });
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an AI assistant for a flashcard-making app. Help users create questions and answers, study tips, and explain topics.',
-          },
-          { role: 'user', content: message },
-        ],
-      }),
+    // Initialize OpenAI with API key from environment variable
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY, // Store key in Vercel environment variables
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('OpenAI Error:', errorData);
-      return res.status(500).json({ error: 'OpenAI API error' });
-    }
+    // Use chat completions (correct API)
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo", // Use a valid model
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful flashcard assistant. Help users create study materials, explain concepts, and provide learning tips."
+        },
+        {
+          role: "user",
+          content: message
+        }
+      ],
+      max_tokens: 500,
+      temperature: 0.7,
+    });
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || 'No response from AI';
+    const reply = completion.choices[0].message.content;
 
     return res.status(200).json({ reply });
-  } catch (err) {
-    console.error('Server Error:', err);
-    return res.status(500).json({ error: 'Server error', details: err.message });
+
+  } catch (error) {
+    console.error('OpenAI API Error:', error);
+    return res.status(500).json({ 
+      error: 'Failed to get AI response',
+      details: error.message 
+    });
   }
 }
