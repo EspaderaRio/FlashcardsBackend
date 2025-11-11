@@ -24,16 +24,16 @@ export default async function handler(req, res) {
 
     // Initialize OpenAI with API key from environment variable
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY, // Store key in Vercel environment variables
+      apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Use chat completions (correct API)
+    // Use chat completions API
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Use a valid model
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content: "You are a helpful flashcard assistant. Help users create study materials, explain concepts, and provide learning tips."
+          content: "You are a helpful flashcard assistant. Help users create study materials, explain concepts, and provide learning tips. Keep responses concise and educational."
         },
         {
           role: "user",
@@ -50,6 +50,22 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('OpenAI API Error:', error);
+    
+    // Handle specific error types
+    if (error.status === 429) {
+      return res.status(429).json({ 
+        error: 'Rate limit exceeded. Please check your OpenAI billing.',
+        details: error.message 
+      });
+    }
+    
+    if (error.status === 401) {
+      return res.status(401).json({ 
+        error: 'Invalid API key. Please check your OpenAI API key.',
+        details: error.message 
+      });
+    }
+
     return res.status(500).json({ 
       error: 'Failed to get AI response',
       details: error.message 
