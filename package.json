@@ -1,25 +1,14 @@
 {
   "name": "flashcards-backend",
   "version": "1.0.0",
-  "description": "AI Flashcard Backend API",
-  "main": "api/ask.js",
+  "description": "AI-powered flashcard assistant backend",
   "type": "module",
+  "main": "api/ask.js",
   "scripts": {
     "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "start": "node api/ask.js"
   },
   "dependencies": {
-    "openai": "^4.67.3"
-  },
-  "engines": {
-    "node": ">=18.x"
-  },
-  "keywords": [
-    "flashcards",
-    "ai",
-    "openai",
-    "education"
-  ],
-  "author": "",
-  "license": "MIT"
+    "openai": "^4.0.0"
+  }
 }
