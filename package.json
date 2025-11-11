@@ -1,9 +1,17 @@
 {
-  "name": "flashcard-ai-assistant",
+  "name": "flashcards-backend",
   "version": "1.0.0",
-  "description": "AI Assistant for Flashcard Maker app",
+  "description": "AI Flashcard Backend API",
+  "main": "api/ask.js",
   "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "openai": "^4.67.3"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
