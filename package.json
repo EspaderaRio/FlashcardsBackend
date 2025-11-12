@@ -6,7 +6,7 @@
   "main": "api/ask.js",
   "scripts": {
     "dev": "vercel dev",
-    "start": "node api/ask.js"
+    "start": "vercel dev"
   },
   "dependencies": {
     "openai": "^4.0.0"
