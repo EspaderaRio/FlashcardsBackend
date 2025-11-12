@@ -2,22 +2,24 @@
 import OpenAI from "openai";
 
 export default async function handler(req, res) {
-  // ✅ Allow only POST
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  // ✅ Handle CORS (for separate frontend)
-  res.setHeader("Access-Control-Allow-Origin", "*"); // for testing; restrict later
+  // ✅ Handle CORS for all requests first
+  const allowedOrigin = "https://espaderario.github.io"; // your frontend domain
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
+  // ✅ Handle OPTIONS preflight properly
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  const { message } = req.body;
+  // ✅ Only allow POST after preflight
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
+  // ✅ Validate message
+  const { message } = req.body || {};
   if (!message) {
     return res.status(400).json({ error: "Missing message" });
   }
